@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #08090A;
+  --foreground: #F4F5F7;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  overflow-x: hidden;
+}
+
+/* Forge Studios Architectural Cards */
+.forge-panel {
+  background: rgba(18, 20, 23, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #23272F;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+}
+
+.forge-panel-interactive {
+  background: rgba(18, 20, 23, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #23272F;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.forge-panel-interactive:hover {
+  border-color: #E87200;
+  box-shadow: 0 10px 30px -10px rgba(232, 114, 0, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Structural Architectural Crosses / Corner Plus Markers */
+.cross-corner-tl::before {
+  content: "+";
+  position: absolute;
+  top: -9px;
+  left: -6px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1;
+  color: #E87200;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.cross-corner-tr::after {
+  content: "+";
+  position: absolute;
+  top: -9px;
+  right: -6px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1;
+  color: #E87200;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* Massive Forge Grotesque Display Headers */
+.forge-heading {
+  font-family: var(--font-barlow);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+
+.forge-subheading {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #8E95A5;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #08090A;
+}
+::-webkit-scrollbar-thumb {
+  background: #23272F;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #E87200;
+}
+
+/* Ticker text pause on hover */
+.ticker-track:hover {
+  animation-play-state: paused;
+}
