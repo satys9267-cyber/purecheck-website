@@ -73,7 +73,12 @@ export default function Home() {
 
   // Handle incoming new data point
   const handleNewTelemetry = useCallback((data: RawNodeMCUTelemetry) => {
-    setTelemetry(data);
+    // Handle both Unix epoch timestamps and ESP8266 local boot millis()
+    const safeTelemetry: RawNodeMCUTelemetry = {
+      ...data,
+      lastSeen: data.lastSeen && data.lastSeen > 1600000000000 ? data.lastSeen : Date.now(),
+    };
+    setTelemetry(safeTelemetry);
     const metrics = calculateWaterPurity(data.tds, data.voltage, data.ec);
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
