@@ -167,8 +167,28 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [isSimulating, isSimulationPaused, simulationProfile, history.length, handleNewTelemetry]);
 
-  const purityMetrics = calculateWaterPurity(telemetry.tds, telemetry.voltage, telemetry.ec);
+  // Heartbeat watchdog ticker (forces re-render every 2s so offline detection triggers automatically within 15s of unplugging battery)
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setTick((t) => t + 1), 2000);
+    return () => clearInterval(timer);
+  }, []);
+
   const deviceState = evaluateDeviceState(telemetry);
+
+  // If the device is offline (disconnected from battery or no heartbeat for >15s),
+  // zero out stale telemetry so the UI immediately reflects true real-time zero state!
+  const effectiveTelemetry: RawNodeMCUTelemetry = deviceState.isOnline
+    ? telemetry
+    : {
+        ...telemetry,
+        tds: 0.0,
+        voltage: 0.0,
+        ec: 0.0,
+        rssi: 0,
+      };
+
+  const purityMetrics = calculateWaterPurity(effectiveTelemetry.tds, effectiveTelemetry.voltage, effectiveTelemetry.ec);
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-[#08090A]">
@@ -179,7 +199,7 @@ export default function Home() {
       {/* Header Navigation: Name of Web, Settings, Menu */}
       <ForgeHeader
         deviceState={deviceState}
-        deviceName={telemetry.deviceName}
+        deviceName={effectiveTelemetry.deviceName}
         isSimulating={isSimulating}
         onToggleSimulating={() => setIsSimulating(!isSimulating)}
         onOpenSettings={() => setIsSettingsOpen(true)}
@@ -191,7 +211,7 @@ export default function Home() {
 
       {/* Main Full-Bleed Hero Carousel */}
       <ForgeHeroCarousel
-        telemetry={telemetry}
+        telemetry={effectiveTelemetry}
         metrics={purityMetrics}
         deviceState={deviceState}
       />
@@ -223,14 +243,21 @@ export default function Home() {
       {/* Services Section */}
       <ForgeServices />
 
-      {/* Featured Projects / Water Benchmarks */}
+      {/* Two-Section Featured Profile: Real-Time Telemetry & Hydrochemical Derivations */}
       <ForgeFolio
-        currentProfile={simulationProfile}
-        onSelectProfile={(profile) => {
-          setSimulationProfile(profile);
-          const immediate = generateSimulatedTelemetry(profile);
-          handleNewTelemetry(immediate);
-          playAlertChime(calculateWaterPurity(immediate.tds).category);
+        telemetry={effectiveTelemetry}
+        deviceState={deviceState}
+        history={history}
+        onManualOverride={(tds, ec) => {
+          handleNewTelemetry({
+            deviceName: 'PureCheck-ManualOverride',
+            tds,
+            voltage: Number((tds * 0.005).toFixed(2)),
+            ec,
+            rssi: -50,
+            ip: '192.168.1.100',
+            lastSeen: Date.now(),
+          });
         }}
       />
 
@@ -250,7 +277,7 @@ export default function Home() {
 
           <LiveTrendChart
             history={history}
-            currentTds={telemetry.tds}
+            currentTds={effectiveTelemetry.tds}
           />
         </div>
       </section>
@@ -270,7 +297,7 @@ export default function Home() {
           </div>
 
           <TelemetryGrid
-            telemetry={telemetry}
+            telemetry={effectiveTelemetry}
             deviceState={deviceState}
           />
         </div>

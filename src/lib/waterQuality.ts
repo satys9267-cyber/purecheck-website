@@ -268,16 +268,16 @@ export function evaluateDeviceState(telemetry: RawNodeMCUTelemetry | null): Devi
   const now = Date.now();
   const diffSeconds = Math.round((now - telemetry.lastSeen) / 1000);
 
-  // Online if reported within last 25 seconds (ESP sends every 3-10s)
-  const isOnline = diffSeconds <= 25;
+  // Online if reported within last 15 seconds (ESP sends every 3s)
+  const isOnline = diffSeconds <= 15;
 
   let statusText = 'Online';
-  if (diffSeconds <= 5) {
+  if (diffSeconds <= 4) {
     statusText = 'Live Heartbeat (just now)';
-  } else if (diffSeconds <= 25) {
+  } else if (diffSeconds <= 15) {
     statusText = `Online (${diffSeconds}s ago)`;
-  } else if (diffSeconds <= 120) {
-    statusText = `Stale signal (${diffSeconds}s ago)`;
+  } else if (diffSeconds <= 60) {
+    statusText = `Signal Lost (${diffSeconds}s ago)`;
   } else {
     const mins = Math.round(diffSeconds / 60);
     statusText = `Offline (${mins} min ago)`;
@@ -306,5 +306,106 @@ export function evaluateDeviceState(telemetry: RawNodeMCUTelemetry | null): Devi
     statusText,
     signalStrength,
     signalBars,
+  };
+}
+
+export interface DerivedHydrochemistry {
+  ecConversionFactor: number; // k = TDS / EC
+  salinityPsu: number; // ppt / PSU
+  hardnessMgL: number; // mg/L CaCO3
+  hardnessGpg: number; // Grains Per Gallon
+  hardnessClassification: string;
+  resistivityKOhmCm: number; // kOhm*cm = 1000 / EC
+  ionicStrengthMolL: number; // mol/L = 2.5e-5 * TDS
+  osmoticPressureBar: number; // bar
+  whoBisStatus: {
+    compliant: boolean;
+    tier: 'Desirable Potable (WHO)' | 'Acceptable (BIS IS 10500)' | 'Permissible Limit' | 'Non-Compliant / Unsafe';
+    color: string;
+    description: string;
+  };
+}
+
+export function computeHydrochemicalDerivations(tds: number, ec?: number, tempC: number = 25.0): DerivedHydrochemistry {
+  const safeTds = Math.max(0, Number(tds) || 0);
+  const safeEc = ec && ec > 0 ? ec : (safeTds > 0 ? safeTds * 2.0 : 0);
+
+  // 1. EC Conversion Factor k = TDS / EC
+  const k = safeEc > 0 ? Number((safeTds / safeEc).toFixed(3)) : 0.500;
+
+  // 2. Salinity (PSU / ppt)
+  const salinityPsu = Number((safeTds * 0.001).toFixed(3));
+
+  // 3. Water Hardness
+  const hardnessMgL = Math.round(safeTds * 0.65);
+  const hardnessGpg = Number((hardnessMgL / 17.1).toFixed(1));
+  let hardnessClassification = 'Soft (<3.5 GPG)';
+  if (hardnessGpg > 10.5) hardnessClassification = 'Very Hard (>10.5 GPG)';
+  else if (hardnessGpg > 7.0) hardnessClassification = 'Hard (7.0–10.5 GPG)';
+  else if (hardnessGpg > 3.5) hardnessClassification = 'Moderately Hard (3.5–7.0 GPG)';
+
+  // 4. Electrical Resistivity (kOhm * cm)
+  const resistivityKOhmCm = safeEc > 0 ? Number((1000.0 / safeEc).toFixed(2)) : 0;
+
+  // 5. Ionic Strength (mol/L) - Russell approximation
+  const ionicStrengthMolL = Number((2.5e-5 * safeTds).toFixed(5));
+
+  // 6. Osmotic Pressure (bar) at tempC
+  const kelvin = tempC + 273.15;
+  const osmoticPressureBar = Number(((safeTds / 58440.0) * 0.08314 * kelvin * 1.8).toFixed(3));
+
+  // 7. WHO / BIS IS 10500
+  let tier: 'Desirable Potable (WHO)' | 'Acceptable (BIS IS 10500)' | 'Permissible Limit' | 'Non-Compliant / Unsafe' = 'Desirable Potable (WHO)';
+  let compliant = true;
+  let color = '#10B981';
+  let description = 'Ideal mineralisation meeting WHO and BIS standards.';
+
+  if (safeTds === 0) {
+    tier = 'Desirable Potable (WHO)';
+    compliant = true;
+    color = '#8E95A5';
+    description = 'No dissolved solids registered. Standby state.';
+  } else if (safeTds < 50) {
+    tier = 'Desirable Potable (WHO)';
+    compliant = true;
+    color = '#38BDF8';
+    description = 'Ultra-low solids. Safe and potable, demineralized profile.';
+  } else if (safeTds <= 150) {
+    tier = 'Desirable Potable (WHO)';
+    compliant = true;
+    color = '#10B981';
+    description = 'Sweet spot for human hydration and cellular absorption.';
+  } else if (safeTds <= 500) {
+    tier = 'Acceptable (BIS IS 10500)';
+    compliant = true;
+    color = '#10B981';
+    description = 'Within BIS IS 10500 Acceptable Requirement Limit (500 ppm).';
+  } else if (safeTds <= 2000) {
+    tier = 'Permissible Limit';
+    compliant = true;
+    color = '#FFA033';
+    description = 'Exceeds desirable threshold; within BIS Permissible Limit in absence of alternative source.';
+  } else {
+    tier = 'Non-Compliant / Unsafe';
+    compliant = false;
+    color = '#EF4444';
+    description = 'Exceeds maximum permissible limit (2000 ppm). Unsafe for human consumption.';
+  }
+
+  return {
+    ecConversionFactor: k,
+    salinityPsu,
+    hardnessMgL,
+    hardnessGpg,
+    hardnessClassification,
+    resistivityKOhmCm,
+    ionicStrengthMolL,
+    osmoticPressureBar,
+    whoBisStatus: {
+      compliant,
+      tier,
+      color,
+      description,
+    },
   };
 }
