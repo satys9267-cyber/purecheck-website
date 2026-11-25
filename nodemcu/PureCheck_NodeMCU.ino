@@ -29,8 +29,8 @@
 // ---------------------------------------------------------------------------------
 // 2. CONFIGURATION: Firebase Realtime Database
 // ---------------------------------------------------------------------------------
-// Realtime Database Host (without https:// or trailing /)
-#define FIREBASE_HOST "purecheck-website-default-rtdb.asia-southeast1.firebasedatabase.app"
+// Full Realtime Database URL with region
+#define DATABASE_URL "https://purecheck-website-default-rtdb.asia-southeast1.firebasedatabase.app"
 
 // Firebase Web API Key
 #define FIREBASE_AUTH "AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs"
@@ -114,7 +114,8 @@ void setup() {
 
   // Initialize Firebase RTDB
   Serial.println("[FIREBASE] Initializing connection...");
-  config.host = FIREBASE_HOST;
+  config.database_url = DATABASE_URL;
+  config.api_key = FIREBASE_AUTH;
   config.signer.tokens.legacy_token = FIREBASE_AUTH;
   
   Firebase.begin(&config, &auth);
