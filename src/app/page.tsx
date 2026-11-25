@@ -22,19 +22,19 @@ import { generateSimulatedTelemetry, SimulationProfile } from '@/lib/simulator';
 export default function Home() {
   const [telemetry, setTelemetry] = useState<RawNodeMCUTelemetry>({
     deviceName: 'PureCheck-NodeMCU-01',
-    tds: 85.0,
-    voltage: 0.42,
-    ec: 170.0,
-    rssi: -58,
-    ip: '192.168.1.104',
-    lastSeen: Date.now(),
+    tds: 0.0,
+    voltage: 0.0,
+    ec: 0.0,
+    rssi: 0,
+    ip: 'Awaiting Hardware',
+    lastSeen: 0,
   });
 
   const [history, setHistory] = useState<TelemetryPoint[]>([]);
-  const [isSimulating, setIsSimulating] = useState<boolean>(true);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
   const [simulationProfile, setSimulationProfile] = useState<SimulationProfile>('spring');
   const [isSimulationPaused, setIsSimulationPaused] = useState<boolean>(false);
-  const [firebaseActive, setFirebaseActive] = useState<boolean>(false);
+  const [firebaseActive, setFirebaseActive] = useState<boolean>(true);
   
   // Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
@@ -109,13 +109,10 @@ export default function Home() {
           handleNewTelemetry(liveData);
         },
         (error) => {
-          console.warn('Firebase error, switching to demo simulation:', error);
-          setIsSimulating(true);
+          console.warn('Firebase waiting for live hardware telemetry:', error);
         }
       );
       return () => unsubscribe();
-    } else {
-      setIsSimulating(true);
     }
   }, [handleNewTelemetry]);
 

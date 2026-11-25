@@ -15,6 +15,45 @@ import { RawNodeMCUTelemetry, PurityMetrics, DeviceState, MineralProfile, WaterH
 export function calculateWaterPurity(tds: number, voltage?: number, ec?: number): PurityMetrics {
   const safeTds = Math.max(0, Number(tds) || 0);
 
+  // If no hardware connected, or TDS probe in air / 0 reading
+  if (safeTds === 0 && (!voltage || voltage < 0.01)) {
+    return {
+      purityPercent: 0,
+      category: 'unsafe',
+      categoryLabel: 'Awaiting Hardware Signal',
+      statusBadge: 'NO PROBE DATA (0 PPM)',
+      colorHex: '#8E95A5',
+      glowClass: '',
+      tdsQuality: 'Standby / 0 ppm',
+      mineralProfile: {
+        rating: 'Standby',
+        tasteNote: 'No Reading',
+        description: 'Waiting for live telemetry from ESP8266 probe.',
+      },
+      roFiltrationMemory: {
+        purifiedPercent: 0,
+        membraneEfficiency: 'Standby',
+      },
+      salinity: {
+        ppt: 0,
+        category: 'Freshwater (0.00 ppt)',
+      },
+      anomaly: {
+        status: 'DRY',
+        label: 'Awaiting Water Sample',
+        isWarning: false,
+        colorHex: '#8E95A5',
+      },
+      hardness: {
+        caco3Equivalent: 0,
+        category: 'Soft',
+        badgeColor: '#8E95A5',
+      },
+      ecValue: 0,
+      healthRecommendation: 'Submerge TDS probe in water sample or connect ESP8266 to begin real-time analysis.',
+    };
+  }
+
   let purity = 100;
   let category: 'safe' | 'moderate' | 'unsafe' = 'safe';
   let categoryLabel = 'Safe for Drinking';
