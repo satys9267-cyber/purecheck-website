@@ -74,7 +74,7 @@ export default function Home() {
   // Handle incoming new data point
   const handleNewTelemetry = useCallback((data: RawNodeMCUTelemetry) => {
     setTelemetry(data);
-    const metrics = calculateWaterPurity(data.tds, data.voltage);
+    const metrics = calculateWaterPurity(data.tds, data.voltage, data.ec);
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
@@ -124,7 +124,7 @@ export default function Home() {
       for (let i = 10; i >= 0; i--) {
         const pointTime = new Date(now - i * 3000);
         const sim = generateSimulatedTelemetry(simulationProfile);
-        const metrics = calculateWaterPurity(sim.tds, sim.voltage);
+        const metrics = calculateWaterPurity(sim.tds, sim.voltage, sim.ec);
         initialPoints.push({
           time: pointTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
           timestamp: now - i * 3000,
@@ -145,7 +145,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [isSimulating, isSimulationPaused, simulationProfile, history.length, handleNewTelemetry]);
 
-  const purityMetrics = calculateWaterPurity(telemetry.tds, telemetry.voltage);
+  const purityMetrics = calculateWaterPurity(telemetry.tds, telemetry.voltage, telemetry.ec);
   const deviceState = evaluateDeviceState(telemetry);
 
   return (

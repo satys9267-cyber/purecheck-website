@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { RawNodeMCUTelemetry, PurityMetrics, DeviceState } from '@/types/telemetry';
-import { Droplet, ArrowLeft, ArrowRight, Activity, Thermometer, ShieldCheck, AlertTriangle, AlertOctagon } from 'lucide-react';
+import { Droplet, ArrowLeft, ArrowRight, ShieldCheck, AlertTriangle, AlertOctagon, Sparkles, Scale, Waves, Filter, Zap } from 'lucide-react';
 import gsap from 'gsap';
 
 interface ForgeHeroCarouselProps {
@@ -21,7 +21,7 @@ export function ForgeHeroCarousel({ telemetry, metrics, deviceState }: ForgeHero
     {
       title: 'SMART TELEMETRY',
       tag: 'VESSEL PROBE',
-      desc: 'Active monitoring of dissolved solids, electro-conductivity, and pH balance via integrated NodeMCU probe.',
+      desc: 'Active monitoring of dissolved solids, electro-conductivity, mineralisation, and water hardness via integrated NodeMCU probe.',
     },
     {
       title: 'ESP8266 HARDWARE',
@@ -223,35 +223,63 @@ export function ForgeHeroCarousel({ telemetry, metrics, deviceState }: ForgeHero
                 </div>
               </div>
 
-              {/* Calculated Readings (3 cols) */}
-              <div className="lg:col-span-3 flex flex-col space-y-2.5 w-full">
-                <div className="p-3 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
-                  <div className="flex items-center space-x-2.5">
-                    <Droplet className="w-4 h-4 text-[#E87200]" />
-                    <span className="text-xs font-mono text-[#8E95A5]">TDS LEVEL:</span>
+              {/* Calculated Readings Laboratory Tiles */}
+              <div className="lg:col-span-3 flex flex-col space-y-2 w-full">
+                {/* 1. Mineral / Taste Profile */}
+                <div className="p-2.5 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Sparkles className="w-3.5 h-3.5 text-[#FFA033]" />
+                    <span className="text-[10px] font-mono text-[#8E95A5]">MINERALS:</span>
                   </div>
-                  <span className="font-mono font-bold text-white text-sm">
-                    {telemetry.tds} <span className="text-xs text-[#8E95A5]">ppm ({metrics.tdsQuality})</span>
+                  <span className="font-mono font-bold text-white text-xs">
+                    {metrics.mineralProfile.tasteNote} <span className="text-[10px] text-[#8E95A5]">({metrics.mineralProfile.rating})</span>
                   </span>
                 </div>
 
-                <div className="p-3 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
-                  <div className="flex items-center space-x-2.5">
-                    <Activity className="w-4 h-4 text-[#10B981]" />
-                    <span className="text-xs font-mono text-[#8E95A5]">pH LEVEL:</span>
+                {/* 2. Water Hardness (Indirect) */}
+                <div className="p-2.5 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Scale className="w-3.5 h-3.5 text-blue-400" />
+                    <span className="text-[10px] font-mono text-[#8E95A5]">HARDNESS:</span>
                   </div>
-                  <span className="font-mono font-bold text-white text-sm">
-                    {metrics.phValue} <span className="text-xs text-[#8E95A5]">({metrics.phQuality})</span>
+                  <span className="font-mono font-bold text-white text-xs">
+                    {metrics.hardness.caco3Equivalent} <span className="text-[10px] text-[#8E95A5]">mg/L ({metrics.hardness.category})</span>
                   </span>
                 </div>
 
-                <div className="p-3 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
-                  <div className="flex items-center space-x-2.5">
-                    <Thermometer className="w-4 h-4 text-blue-400" />
-                    <span className="text-xs font-mono text-[#8E95A5]">TEMP:</span>
+                {/* 3. RO Memory / Purity % */}
+                <div className="p-2.5 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Filter className="w-3.5 h-3.5 text-[#10B981]" />
+                    <span className="text-[10px] font-mono text-[#8E95A5]">RO MEMORY:</span>
                   </div>
-                  <span className="font-mono font-bold text-white text-sm">
-                    {metrics.temperatureC}°C <span className="text-xs text-[#8E95A5]">({metrics.temperatureQuality})</span>
+                  <span className="font-mono font-bold text-white text-xs">
+                    {metrics.roFiltrationMemory.purifiedPercent}% <span className="text-[10px] text-[#10B981]">PURIFIED</span>
+                  </span>
+                </div>
+
+                {/* 4. Salinity & EC */}
+                <div className="p-2.5 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Waves className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="text-[10px] font-mono text-[#8E95A5]">SALINITY:</span>
+                  </div>
+                  <span className="font-mono font-bold text-white text-xs">
+                    {metrics.salinity.ppt} ppt <span className="text-[10px] text-[#8E95A5]">({metrics.ecValue} µS/cm)</span>
+                  </span>
+                </div>
+
+                {/* 5. Anomaly State */}
+                <div className="p-2.5 rounded bg-[#121417] border border-[#23272F] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[#10B981]" />
+                    <span className="text-[10px] font-mono text-[#8E95A5]">FLOW STATE:</span>
+                  </div>
+                  <span
+                    className="font-mono font-bold text-[11px] uppercase"
+                    style={{ color: metrics.anomaly.colorHex }}
+                  >
+                    {metrics.anomaly.label}
                   </span>
                 </div>
               </div>
