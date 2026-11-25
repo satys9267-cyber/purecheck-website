@@ -96,14 +96,15 @@ export default function Home() {
     });
   }, []);
 
-  // Firebase Realtime Database Subscription
+  // Telemetry Subscriptions: Firebase Realtime Database & Vercel Direct HTTP Ingestion
   useEffect(() => {
     const configured = isFirebaseConfigured();
     setFirebaseActive(configured);
 
+    let unsubscribeFirebase: (() => void) | null = null;
     if (configured) {
       setIsSimulating(false);
-      const unsubscribe = subscribeToDevice(
+      unsubscribeFirebase = subscribeToDevice(
         'nodemcu_01',
         (liveData) => {
           handleNewTelemetry(liveData);
@@ -112,8 +113,27 @@ export default function Home() {
           console.warn('Firebase waiting for live hardware telemetry:', error);
         }
       );
-      return () => unsubscribe();
     }
+
+    // Direct Vercel /api/telemetry poll (supports direct HTTP POST from NodeMCU)
+    const pollInterval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/telemetry', { cache: 'no-store' });
+        if (res.ok) {
+          const apiData: RawNodeMCUTelemetry = await res.json();
+          if (apiData && apiData.lastSeen && apiData.lastSeen > 0) {
+            handleNewTelemetry(apiData);
+          }
+        }
+      } catch {
+        // silent
+      }
+    }, 2000);
+
+    return () => {
+      if (unsubscribeFirebase) unsubscribeFirebase();
+      clearInterval(pollInterval);
+    };
   }, [handleNewTelemetry]);
 
   // Initial simulation seed
