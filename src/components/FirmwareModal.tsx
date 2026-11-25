@@ -23,11 +23,13 @@ export function FirmwareModal({ isOpen, onClose }: FirmwareModalProps) {
 #include <ESP8266WiFi.h>
 #include <FirebaseESP8266.h>
 
-#define WIFI_SSID "YOUR_WIFI_SSID"
-#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
+// WiFi Configuration
+#define WIFI_SSID "Nothing Phone (3a)_2344"
+#define WIFI_PASSWORD "Satyam@S7"
 
-#define FIREBASE_HOST "your-project-default-rtdb.firebaseio.com"
-#define FIREBASE_AUTH "YOUR_FIREBASE_SECRET_OR_WEB_API_KEY"
+// Firebase Realtime Database Configuration
+#define FIREBASE_HOST "purecheck-website-default-rtdb.firebaseio.com"
+#define FIREBASE_AUTH "AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs"
 
 #define TDS_PIN A0
 #define VREF 3.3

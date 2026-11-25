@@ -23,19 +23,17 @@
 // ---------------------------------------------------------------------------------
 // 1. CONFIGURATION: Wi-Fi Credentials
 // ---------------------------------------------------------------------------------
-#define WIFI_SSID "YOUR_WIFI_SSID"          // Replace with your 2.4GHz Wi-Fi name
-#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"  // Replace with your Wi-Fi password
+#define WIFI_SSID "Nothing Phone (3a)_2344"
+#define WIFI_PASSWORD "Satyam@S7"
 
 // ---------------------------------------------------------------------------------
 // 2. CONFIGURATION: Firebase Realtime Database
 // ---------------------------------------------------------------------------------
-// Do NOT include "https://" or trailing "/" in FIREBASE_HOST!
-// Example: "purecheck-water-default-rtdb.firebaseio.com"
-#define FIREBASE_HOST "YOUR_PROJECT_ID-default-rtdb.firebaseio.com"
+// Realtime Database Host (without https:// or trailing /)
+#define FIREBASE_HOST "purecheck-website-default-rtdb.firebaseio.com"
 
-// In Firebase Console > Project Settings > Service Accounts > Database Secrets
-// (Or your Web API Key)
-#define FIREBASE_AUTH "YOUR_FIREBASE_DATABASE_SECRET_OR_WEB_API_KEY"
+// Firebase Web API Key
+#define FIREBASE_AUTH "AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs"
 
 // Telemetry target path in Realtime Database
 #define FIREBASE_PATH "/devices/nodemcu_01"

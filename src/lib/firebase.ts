@@ -41,13 +41,13 @@ export function getActiveFirebaseConfig(): FirebaseConfigOptions {
   }
 
   return {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'demo-api-key',
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'purecheck-demo.firebaseapp.com',
-    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || '',
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'purecheck-demo',
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'purecheck-demo.appspot.com',
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:123456789:web:abcdef',
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs',
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'purecheck-website.firebaseapp.com',
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 'https://purecheck-website-default-rtdb.firebaseio.com',
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'purecheck-website',
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'purecheck-website.firebasestorage.app',
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '544623453813',
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:544623453813:web:7a5dbdb910743f38e27a3c',
   };
 }
 
