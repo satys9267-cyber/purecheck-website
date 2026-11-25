@@ -15,7 +15,7 @@ int getMedianNum(int bArray[], int iFilterLen);
 // 2. CONFIGURATION: Firebase Realtime Database
 // ---------------------------------------------------------------------------------
 // Realtime Database Host (without https:// or trailing /)
-#define FIREBASE_HOST "purecheck-website-default-rtdb.firebaseio.com"
+#define FIREBASE_HOST "purecheck-website-default-rtdb.asia-southeast1.firebasedatabase.app"
 
 // Firebase Web API Key
 #define FIREBASE_AUTH "AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs"

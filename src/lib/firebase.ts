@@ -43,7 +43,7 @@ export function getActiveFirebaseConfig(): FirebaseConfigOptions {
   return {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs',
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'purecheck-website.firebaseapp.com',
-    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 'https://purecheck-website-default-rtdb.firebaseio.com',
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || 'https://purecheck-website-default-rtdb.asia-southeast1.firebasedatabase.app',
     projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'purecheck-website',
     storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'purecheck-website.firebasestorage.app',
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '544623453813',

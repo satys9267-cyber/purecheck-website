@@ -28,7 +28,7 @@ export function FirmwareModal({ isOpen, onClose }: FirmwareModalProps) {
 #define WIFI_PASSWORD "Satyam@S7"
 
 // Firebase Realtime Database Configuration
-#define FIREBASE_HOST "purecheck-website-default-rtdb.firebaseio.com"
+#define FIREBASE_HOST "purecheck-website-default-rtdb.asia-southeast1.firebasedatabase.app"
 #define FIREBASE_AUTH "AIzaSyCEDZQDDpi8glzmbq4gPaF8UgVuznIDhJs"
 
 #define TDS_PIN A0
